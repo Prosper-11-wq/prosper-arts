@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperMarket Pro - Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            text-align: center;
+            color: #4a5568;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 400px;
+            margin: 50px auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #edf2f7;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .btn-success {
+            background: #38a169;
+            color: white;
+        }
+
+        .main-content {
+            display: none;
+        }
+
+        .main-content.active {
+            display: block;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .module-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .module-card h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .module-card p {
+            color: #718096;
+            line-height: 1.6;
+        }
+
+        .module-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .module-content.active {
+            display: block;
+        }
+
+        .pos-interface {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            height: 70vh;
+        }
+
+        .pos-left {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 18px;
+        }
+
+        .cart-items {
+            flex: 1;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f7fafc;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-summary {
+            background: #4a5568;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .pos-right {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .payment-section {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f7fafc;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .low-stock {
+            border-left: 4px solid #e53e3e;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .alert-warning {
+            background: #fef5e7;
+            border: 1px solid #f6ad55;
+            color: #c05621;
+        }
+
+        .alert-success {
+            background: #f0fff4;
+            border: 1px solid #68d391;
+            color: #22543d;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            border: 1px solid #f56565;
+            color: #c53030;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .table tr:hover {
+            background: #f7fafc;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge-warning {
+            background: #fef5e7;
+            color: #c05621;
+        }
+
+        .badge-danger {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .nav-tab {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #718096;
+            transition: all 0.3s;
+        }
+
+        .nav-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .pos-interface {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Interface -->
+        <div id="loginContainer" class="login-container">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #4a5568;">SuperMarket Pro Login</h2>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <div id="loginError" class="alert alert-error hidden" style="margin-top: 15px;"></div>
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 14px; color: #718096;">
+                <strong>Demo Accounts:</strong><br>
+                Admin: admin / admin123<br>
+                Manager: manager / manager123<br>
+                Cashier: cashier / cashier123<br>
+                Inventory: inventory / inventory123
+            </div>
+        </div>
+
+        <!-- Main Application -->
+        <div id="mainApp" class="main-content">
+            <div class="header">
+                <h1>SuperMarket Pro</h1>
+                <div class="user-info">
+                    <div>
+                        <strong id="currentUser"></strong>
+                        <span id="currentRole" class="badge badge-success"></span>
+                    </div>
+                    <div>
+                        <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module Selection -->
+            <div id="moduleSelection" class="modules-grid">
+                <div class="module-card" data-module="pos">
+                    <h3>🏪 Point of Sale (POS)</h3>
+                    <p>Fast and intuitive checkout system with barcode scanning, payment processing, and receipt generation.</p>
+                </div>
+                <div class="module-card" data-module="inventory">
+                    <h3>📦 Inventory Management</h3>
+                    <p>Real-time stock tracking, supplier management, purchase orders, and automated reorder alerts.</p>
+                </div>
+                <div class="module-card" data-module="stocktake">
+                    <h3>📊 Stock Taking</h3>
+                    <p>Digital inventory counting with discrepancy resolution and audit trail maintenance.</p>
+                </div>
+                <div class="module-card" data-module="users">
+                    <h3>👥 User Management</h3>
+                    <p>Role-based access control, user registration, and security management.</p>
+                </div>
+            </div>
+
+            <!-- POS Module -->
+            <div id="posModule" class="module-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Point of Sale System</h2>
+                    <button id="backToModules" class="btn btn-secondary">← Back to Modules</button>
+                </div>
+                
+                <div class="pos-interface">
+                    <div class="pos-left">
+                        <div class="search-bar">
+                            <input type="text" id="productSearch" placeholder="Scan barcode or search product..." autofocus>
+                            <button id="searchBtn" class="btn btn-primary">Search</button>
+                        </div>
+                        
+                        <div class="cart-items" id="cartItems">
+                            <div style="text-align: center; color: #718096; padding: 40px;">
+                                No items in cart. Start scanning or searching for products.
+                            </div>
+                        </div>
+                        
+                        <div class="cart-summary">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">UGX 0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span>Tax (18%):</span>
+                                <span id="tax">UGX 0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 1.2em; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 10px;">
+                                <span>Total:</span>
+                                <span id="total">UGX 0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pos-right">
+                        <div class="payment-section">
+                            <h3>Payment</h3>
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label>Payment Method</label>
+                                <select id="paymentMethod">
+                                    <option value="cash">Cash</option>
+                                    <option value="mobile">Mobile Money</option>
+                                    <option value="card">Card (Coming Soon)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount Received</label>
+                                <input type="number" id="amountReceived" placeholder="0" min="0" step="0.01">
+                            </div>
+                            <div id="changeAmount" style="margin: 15px 0; font-size: 1.1em; font-weight: bold;"></div>
+                            <button id="completePayment" class="btn btn-success" style="width: 100%; margin-top: 15px;">Complete Payment</button>
+                            <button id="clearCart" class="btn btn-danger" style="width: 100%; margin-top: 10px;">Clear Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Module -->
+            <div id="inventoryModule" class="module-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Inventory Management</h2>
+                    <div>
+                        <button id="addProductBtn" class="btn btn-primary">Add Product</button>
+                        <button id="backToModules2" class="btn btn-secondary">← Back</button>
+                    </div>
+                </div>
+
+                <div class="nav-tabs">
+                    <button class="nav-tab active" data-tab="products">Products</button>
+                    <button class="nav-tab" data-tab="alerts">Alerts</button>
+                    <button class="nav-tab" data-tab="reports">Reports</button>
+                </div>
+
+                <div id="productsTab" class="tab-content">
+                    <div id="inventoryGrid" class="inventory-grid"></div>
+                </div>
+
+                <div id="alertsTab" class="tab-content hidden">
+                    <div id="lowStockAlerts"></div>
+                </div>
+
+                <div id="reportsTab" class="tab-content hidden">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <h4>Total Inventory Value</h4>
+                            <div style="font-size: 2em; color: #667eea; font-weight: bold;" id="totalValue">UGX 0</div>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <h4>Low Stock Items</h4>
+                            <div style="font-size: 2em; color: #e53e3e; font-weight: bold;" id="lowStockCount">0</div>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <h4>Total Products</h4>
+                            <div style="font-size: 2em; color: #38a169; font-weight: bold;" id="totalProducts">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Taking Module -->
+            <div id="stocktakeModule" class="module-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Stock Taking</h2>
+                    <div>
+                        <button id="newStocktakeBtn" class="btn btn-primary">New Stock Take</button>
+                        <button id="backToModules3" class="btn btn-secondary">← Back</button>
+                    </div>
+                </div>
+
+                <div id="stocktakeList"></div>
+            </div>
+
+            <!-- User Management Module -->
+            <div id="usersModule" class="module-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>User Management</h2>
+                    <div>
+                        <button id="addUserBtn" class="btn btn-primary">Add User</button>
+                        <button id="backToModules4" class="btn btn-secondary">← Back</button>
+                    </div>
+                </div>
+
+                <div id="usersList"></div>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <div id="addProductModal" class="modal">
+            <div class="modal-content">
+                <h3>Add New Product</h3>
+                <form id="addProductForm">
+                    <div class="form-group">
+                        <label>SKU</label>
+                        <input type="text" id="productSku" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" id="productName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <input type="text" id="productCategory" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Cost Price (UGX)</label>
+                        <input type="number" id="productCost" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Retail Price (UGX)</label>
+                        <input type="number" id="productPrice" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Current Stock</label>
+                        <input type="number" id="productStock" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Reorder Point</label>
+                        <input type="number" id="productReorder" min="0" required>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" class="btn btn-primary">Add Product</button>
+                        <button type="button" id="cancelAddProduct" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="addUserModal" class="modal">
+            <div class="modal-content">
+                <h3>Add New User</h3>
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="newUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="newUserRole" required>
+                            <option value="">Select Role</option>
+                            <option value="cashier">Cashier</option>
+                            <option value="inventory">Inventory Clerk</option>
+                            <option value="manager">Manager</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="newUserName" required>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" class="btn btn-primary">Add User</button>
+                        <button type="button" id="cancelAddUser" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="receiptModal" class="modal">
+            <div class="modal-content">
+                <h3>Transaction Receipt</h3>
+                <div id="receiptContent"></div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button id="printReceipt" class="btn btn-primary">Print</button>
+                    <button id="closeReceipt" class="btn btn-secondary">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database simulation using in-memory storage
+        let currentUser = null;
+        let cart = [];
+        let transactionCounter = 1;
+
+        // Sample data
+        const users = [
+            { id: 1, username: 'admin', password: 'admin123', role: 'admin', name: 'System Administrator' },
+            { id: 2, username: 'manager', password: 'manager123', role: 'manager', name: 'Store Manager' },
+            { id: 3, username: 'cashier', password: 'cashier123', role: 'cashier', name: 'Cashier One' },
+            { id: 4, username: 'inventory', password: 'inventory123', role: 'inventory', name: 'Inventory Clerk' }
+        ];
+
+        const products = [
+            { id: 1, sku: 'MILK001', name: 'Fresh Milk 1L', category: 'Dairy', cost_price: 2500, retail_price: 3500, current_stock: 45, reorder_point: 20 },
+            { id: 2, sku: 'BREAD001', name: 'White Bread Loaf', category: 'Bakery', cost_price: 1800, retail_price: 2500, current_stock: 8, reorder_point: 15 },
+            { id: 3, sku: 'RICE001', name: 'Jasmine Rice 5kg', category: 'Grains', cost_price: 12000, retail_price: 15000, current_stock: 25, reorder_point: 10 },
+            { id: 4, sku: 'SOAP001', name: 'Laundry Soap Bar', category: 'Household', cost_price: 800, retail_price: 1200, current_stock: 5, reorder_point: 25 },
+            { id: 5, sku: 'SUGAR001', name: 'White Sugar 2kg', category: 'Pantry', cost_price: 4500, retail_price: 6000, current_stock: 30, reorder_point: 12 }
+        ];
+
+        const stockHistory = [];
+        const transactions = [];
+        const stocktakes = [];
+
+        // Role permissions
+        const permissions = {
+            admin: ['pos', 'inventory', 'stocktake', 'users'],
+            manager: ['pos', 'inventory', 'stocktake'],
+            cashier: ['pos'],
+            inventory: ['inventory', 'stocktake']
+        };
+
+        // Authentication functions
+        function login(username, password) {
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                currentUser = user;
+                return true;
+            }
+            return false;
+        }
+
+        function logout() {
+            currentUser = null;
+            cart = [];
+            showLogin();
+        }
+
+        function hasPermission(module) {
+            return currentUser && permissions[currentUser.role].includes(module);
+        }
+
+        // UI Functions
+        function showLogin() {
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('mainApp').classList.remove('active');
+        }
+
+        function showMainApp() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('mainApp').classList.add('active');
+            document.getElementById('currentUser').textContent = currentUser.name;
+            document.getElementById('currentRole').textContent = currentUser.role.toUpperCase();
+            showModuleSelection();
+            filterModulesByPermission();
+        }
+
+        function filterModulesByPermission() {
+            const moduleCards = document.querySelectorAll('.module-card');
+            moduleCards.forEach(card => {
+                const module = card.getAttribute('data-module');
+                if (!hasPermission(module)) {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function showModuleSelection() {
+            document.getElementById('moduleSelection').style.display = 'grid';
+            document.querySelectorAll('.module-content').forEach(content => {
+                content.classList.remove('active');
+            });
+        }
+
+        function showModule(moduleName) {
+            document.getElementById('moduleSelection').style.display = 'none';
+            document.querySelectorAll('.module-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(moduleName + 'Module').classList.add('active');
+            
+            // Load module specific data
+            switch(moduleName) {
+                case 'inventory':
+                    loadInventory();
+                    break;
+                case 'stocktake':
+                    loadStocktakes();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+            }
+        }
+
+        // POS Functions
+        function searchProduct(query) {
+            return products.find(p => 
+                p.sku.toLowerCase().includes(query.toLowerCase()) || 
+                p.name.toLowerCase().includes(query.toLowerCase())
+            );
+        }
+
+        function addToCart(productId, quantity = 1) {
+            const product = products.find(p => p.id === productId);
+            
+            if (!product) {
+                showAlert('Product not found', 'error');
+                return;
+            }
+            
+            if (product.current_stock < quantity) {
+                showAlert(`Insufficient stock. Only ${product.current_stock} available.`, 'error');
+                return;
+            }
+            
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                if (existingItem.quantity + quantity > product.current_stock) {
+                    showAlert(`Cannot add more. Stock limit: ${product.current_stock}`, 'error');
+                    return;
+                }
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id: productId,
+                    sku: product.sku,
+                    name: product.name,
+                    price: product.retail_price,
+                    quantity: quantity
+                });
+            }
+            
+            updateCartDisplay();
+            document.getElementById('productSearch').value = '';
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartDisplay();
+        }
+
+        function updateCartQuantity(productId, newQuantity) {
+            const product = products.find(p => p.id === productId);
+            if (newQuantity > product.current_stock) {
+                showAlert(`Cannot exceed stock limit: ${product.current_stock}`, 'error');
+                return;
+            }
+            
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                if (newQuantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    item.quantity = newQuantity;
+                }
+                updateCartDisplay();
+            }
+        }
+
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cartItems');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<div style="text-align: center; color: #718096; padding: 40px;">No items in cart. Start scanning or searching for products.</div>';
+            } else {
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <div style="flex: 1;">
+                            <strong>${item.name}</strong><br>
+                            <small>${item.sku} - UGX ${item.price.toLocaleString()}</small>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <button onclick="updateCartQuantity(${item.id}, ${item.quantity - 1})" class="btn btn-secondary" style="padding: 5px 10px;">-</button>
+                            <input type="number" value="${item.quantity}" min="1" 
+                                   onchange="updateCartQuantity(${item.id}, parseInt(this.value))" 
+                                   style="width: 60px; text-align: center; padding: 5px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                            <button onclick="updateCartQuantity(${item.id}, ${item.quantity + 1})" class="btn btn-secondary" style="padding: 5px 10px;">+</button>
+                            <button onclick="removeFromCart(${item.id})" class="btn btn-danger" style="padding: 5px 10px;">×</button>
+                        </div>
+                        <div style="font-weight: bold; margin-left: 15px;">
+                            UGX ${(item.price * item.quantity).toLocaleString()}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            updateCartSummary();
+        }
+
+        function updateCartSummary() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.00;
+            const total = subtotal + tax;
+            
+            document.getElementById('subtotal').textContent = `UGX ${subtotal.toLocaleString()}`;
+            document.getElementById('tax').textContent = `UGX ${tax.toLocaleString()}`;
+            document.getElementById('total').textContent = `UGX ${total.toLocaleString()}`;
+            
+            // Update change calculation
+            const amountReceived = parseFloat(document.getElementById('amountReceived').value) || 0;
+            const change = amountReceived - total;
+            const changeDisplay = document.getElementById('changeAmount');
+            
+            if (amountReceived > 0) {
+                if (change >= 0) {
+                    changeDisplay.textContent = `Change: UGX ${change.toLocaleString()}`;
+                    changeDisplay.style.color = '#38a169';
+                } else {
+                    changeDisplay.textContent = `Insufficient: UGX ${Math.abs(change).toLocaleString()} more needed`;
+                    changeDisplay.style.color = '#e53e3e';
+                }
+            } else {
+                changeDisplay.textContent = '';
+            }
+        }
+
+        function completePayment() {
+            if (cart.length === 0) {
+                showAlert('Cart is empty', 'error');
+                return;
+            }
+            
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.00;
+            const total = subtotal + tax;
+            const amountReceived = parseFloat(document.getElementById('amountReceived').value) || 0;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            
+            if (paymentMethod === 'cash' && amountReceived < total) {
+                showAlert('Insufficient amount received', 'error');
+                return;
+            }
+            
+            // Process transaction
+            const transaction = {
+                id: transactionCounter++,
+                items: [...cart],
+                subtotal: subtotal,
+                tax: tax,
+                total: total,
+                paymentMethod: paymentMethod,
+                amountReceived: amountReceived,
+                change: amountReceived - total,
+                timestamp: new Date(),
+                cashier: currentUser.name
+            };
+            
+            transactions.push(transaction);
+            
+            // Update inventory
+            cart.forEach(item => {
+                const product = products.find(p => p.id === item.id);
+                product.current_stock -= item.quantity;
+                
+                // Add to stock history
+                stockHistory.push({
+                    id: stockHistory.length + 1,
+                    product_id: item.id,
+                    change_type: 'sale',
+                    quantity_change: -item.quantity,
+                    timestamp: new Date(),
+                    user_id: currentUser.id,
+                    reference: `Transaction #${transaction.id}`
+                });
+            });
+            
+            // Show receipt
+            showReceipt(transaction);
+            
+            // Clear cart
+            cart = [];
+            updateCartDisplay();
+            document.getElementById('amountReceived').value = '';
+            document.getElementById('paymentMethod').value = 'cash';
+            
+            showAlert('Payment completed successfully', 'success');
+        }
+
+        function showReceipt(transaction) {
+            const receiptContent = document.getElementById('receiptContent');
+            receiptContent.innerHTML = `
+                <div style="text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 20px;">
+                    <h3>SuperMarket Pro</h3>
+                    <p>Your Trusted Neighborhood Store</p>
+                    <p>Transaction #${transaction.id}</p>
+                    <p>${transaction.timestamp.toLocaleString()}</p>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <strong>Cashier:</strong> ${transaction.cashier}<br>
+                    <strong>Payment Method:</strong> ${transaction.paymentMethod.toUpperCase()}
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${transaction.items.map(item => `
+                            <tr>
+                                <td>${item.name}</td>
+                                <td>${item.quantity}</td>
+                                <td>UGX ${item.price.toLocaleString()}</td>
+                                <td>UGX ${(item.price * item.quantity).toLocaleString()}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <div style="border-top: 2px solid #e2e8f0; padding-top: 15px; margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Subtotal:</span>
+                        <span>UGX ${transaction.subtotal.toLocaleString()}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Tax (18%):</span>
+                        <span>UGX ${transaction.tax.toLocaleString()}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2em;">
+                        <span>Total:</span>
+                        <span>UGX ${transaction.total.toLocaleString()}</span>
+                    </div>
+                    ${transaction.paymentMethod === 'cash' ? `
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Amount Received:</span>
+                                <span>UGX ${transaction.amountReceived.toLocaleString()}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Change:</span>
+                                <span>UGX ${transaction.change.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+                <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                    <p>Thank you for shopping with us!</p>
+                    <p>Please keep this receipt for your records</p>
+                </div>
+            `;
+            
+            document.getElementById('receiptModal').classList.add('active');
+        }
+
+        // Inventory Functions
+        function loadInventory() {
+            updateInventoryStats();
+            displayProducts();
+            displayLowStockAlerts();
+        }
+
+        function displayProducts() {
+            const grid = document.getElementById('inventoryGrid');
+            grid.innerHTML = products.map(product => `
+                <div class="product-card ${product.current_stock <= product.reorder_point ? 'low-stock' : ''}">
+                    <h4>${product.name}</h4>
+                    <p><strong>SKU:</strong> ${product.sku}</p>
+                    <p><strong>Category:</strong> ${product.category}</p>
+                    <p><strong>Stock:</strong> ${product.current_stock}</p>
+                    <p><strong>Reorder Point:</strong> ${product.reorder_point}</p>
+                    <p><strong>Cost:</strong> UGX ${product.cost_price.toLocaleString()}</p>
+                    <p><strong>Retail:</strong> UGX ${product.retail_price.toLocaleString()}</p>
+                    ${product.current_stock <= product.reorder_point ? 
+                        '<div class="badge badge-danger">Low Stock</div>' : 
+                        '<div class="badge badge-success">In Stock</div>'
+                    }
+                </div>
+            `).join('');
+        }
+
+        function displayLowStockAlerts() {
+            const alertsDiv = document.getElementById('lowStockAlerts');
+            const lowStockProducts = products.filter(p => p.current_stock <= p.reorder_point);
+            
+            if (lowStockProducts.length === 0) {
+                alertsDiv.innerHTML = '<div class="alert alert-success">No low stock alerts. All products are adequately stocked.</div>';
+            } else {
+                alertsDiv.innerHTML = `
+                    <div class="alert alert-warning">
+                        <strong>Low Stock Alert!</strong> ${lowStockProducts.length} product(s) need reordering.
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>SKU</th>
+                                <th>Current Stock</th>
+                                <th>Reorder Point</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${lowStockProducts.map(product => `
+                                <tr>
+                                    <td>${product.name}</td>
+                                    <td>${product.sku}</td>
+                                    <td>${product.current_stock}</td>
+                                    <td>${product.reorder_point}</td>
+                                    <td><span class="badge badge-danger">Reorder Required</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+        }
+
+        function updateInventoryStats() {
+            const totalValue = products.reduce((sum, p) => sum + (p.cost_price * p.current_stock), 0);
+            const lowStockCount = products.filter(p => p.current_stock <= p.reorder_point).length;
+            const totalProducts = products.length;
+            
+            document.getElementById('totalValue').textContent = `UGX ${totalValue.toLocaleString()}`;
+            document.getElementById('lowStockCount').textContent = lowStockCount;
+            document.getElementById('totalProducts').textContent = totalProducts;
+        }
+
+        function addProduct(productData) {
+            const newProduct = {
+                id: Math.max(...products.map(p => p.id)) + 1,
+                sku: productData.sku,
+                name: productData.name,
+                category: productData.category,
+                cost_price: parseFloat(productData.cost),
+                retail_price: parseFloat(productData.price),
+                current_stock: parseInt(productData.stock),
+                reorder_point: parseInt(productData.reorder)
+            };
+            
+            products.push(newProduct);
+            
+            // Add to stock history
+            stockHistory.push({
+                id: stockHistory.length + 1,
+                product_id: newProduct.id,
+                change_type: 'receive',
+                quantity_change: newProduct.current_stock,
+                timestamp: new Date(),
+                user_id: currentUser.id,
+                reference: 'Initial Stock'
+            });
+            
+            loadInventory();
+            showAlert('Product added successfully', 'success');
+        }
+
+        // Stock Taking Functions
+        function loadStocktakes() {
+            const stocktakeList = document.getElementById('stocktakeList');
+            
+            if (stocktakes.length === 0) {
+                stocktakeList.innerHTML = '<div class="alert alert-success">No stock takes recorded. Click "New Stock Take" to start your first count.</div>';
+            } else {
+                stocktakeList.innerHTML = `
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Started By</th>
+                                <th>Start Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${stocktakes.map(st => `
+                                <tr>
+                                    <td>#${st.id}</td>
+                                    <td>${st.created_by}</td>
+                                    <td>${st.start_date.toLocaleString()}</td>
+                                    <td><span class="badge badge-${st.status === 'completed' ? 'success' : 'warning'}">${st.status.toUpperCase()}</span></td>
+                                    <td>
+                                        ${st.status === 'in_progress' ? 
+                                            '<button class="btn btn-primary" onclick="continueStocktake(' + st.id + ')">Continue</button>' :
+                                            '<button class="btn btn-secondary" onclick="viewStocktake(' + st.id + ')">View</button>'
+                                        }
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+        }
+
+        function createNewStocktake() {
+            const stocktake = {
+                id: stocktakes.length + 1,
+                snapshot: JSON.parse(JSON.stringify(products)), // Deep copy
+                counts: {},
+                status: 'in_progress',
+                start_date: new Date(),
+                created_by: currentUser.name,
+                created_by_id: currentUser.id
+            };
+            
+            stocktakes.push(stocktake);
+            showAlert('New stock take created', 'success');
+            loadStocktakes();
+        }
+
+        // User Management Functions
+        function loadUsers() {
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${users.map(user => `
+                            <tr>
+                                <td>${user.username}</td>
+                                <td>${user.name}</td>
+                                <td><span class="badge badge-${user.role === 'admin' ? 'danger' : user.role === 'manager' ? 'warning' : 'success'}">${user.role.toUpperCase()}</span></td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function addUser(userData) {
+            const newUser = {
+                id: Math.max(...users.map(u => u.id)) + 1,
+                username: userData.username,
+                password: userData.password,
+                role: userData.role,
+                name: userData.name
+            };
+            
+            users.push(newUser);
+            loadUsers();
+            showAlert('User added successfully', 'success');
+        }
+
+        // Utility Functions
+        function showAlert(message, type) {
+            // Create temporary alert
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.style.position = 'fixed';
+            alert.style.top = '20px';
+            alert.style.right = '20px';
+            alert.style.zIndex = '9999';
+            alert.style.minWidth = '300px';
+            
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Login form
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                if (login(username, password)) {
+                    showMainApp();
+                } else {
+                    const errorDiv = document.getElementById('loginError');
+                    errorDiv.textContent = 'Invalid username or password';
+                    errorDiv.classList.remove('hidden');
+                }
+            });
+
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+
+            // Module navigation
+            document.querySelectorAll('.module-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const module = this.getAttribute('data-module');
+                    if (hasPermission(module)) {
+                        showModule(module);
+                    }
+                });
+            });
+
+            // Back buttons
+            document.getElementById('backToModules').addEventListener('click', showModuleSelection);
+            document.getElementById('backToModules2').addEventListener('click', showModuleSelection);
+            document.getElementById('backToModules3').addEventListener('click', showModuleSelection);
+            document.getElementById('backToModules4').addEventListener('click', showModuleSelection);
+
+            // POS Functions
+            document.getElementById('productSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const query = this.value.trim();
+                    if (query) {
+                        const product = searchProduct(query);
+                        if (product) {
+                            addToCart(product.id);
+                        } else {
+                            showAlert('Product not found', 'error');
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('searchBtn').addEventListener('click', function() {
+                const query = document.getElementById('productSearch').value.trim();
+                if (query) {
+                    const product = searchProduct(query);
+                    if (product) {
+                        addToCart(product.id);
+                    } else {
+                        showAlert('Product not found', 'error');
+                    }
+                }
+            });
+
+            document.getElementById('amountReceived').addEventListener('input', updateCartSummary);
+            document.getElementById('completePayment').addEventListener('click', completePayment);
+            document.getElementById('clearCart').addEventListener('click', function() {
+                cart = [];
+                updateCartDisplay();
+                document.getElementById('amountReceived').value = '';
+            });
+
+            // Inventory tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    
+                    // Update tab appearance
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show/hide content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(targetTab + 'Tab').classList.remove('hidden');
+                });
+            });
+
+            // Modal handlers
+            document.getElementById('addProductBtn').addEventListener('click', function() {
+                document.getElementById('addProductModal').classList.add('active');
+            });
+
+            document.getElementById('cancelAddProduct').addEventListener('click', function() {
+                document.getElementById('addProductModal').classList.remove('active');
+                document.getElementById('addProductForm').reset();
+            });
+
+            document.getElementById('addProductForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const productData = {
+                    sku: document.getElementById('productSku').value,
+                    name: document.getElementById('productName').value,
+                    category: document.getElementById('productCategory').value,
+                    cost: document.getElementById('productCost').value,
+                    price: document.getElementById('productPrice').value,
+                    stock: document.getElementById('productStock').value,
+                    reorder: document.getElementById('productReorder').value
+                };
+                
+                addProduct(productData);
+                document.getElementById('addProductModal').classList.remove('active');
+                this.reset();
+            });
+
+            document.getElementById('newStocktakeBtn').addEventListener('click', createNewStocktake);
+
+            // User management
+            document.getElementById('addUserBtn').addEventListener('click', function() {
+                document.getElementById('addUserModal').classList.add('active');
+            });
+
+            document.getElementById('cancelAddUser').addEventListener('click', function() {
+                document.getElementById('addUserModal').classList.remove('active');
+                document.getElementById('addUserForm').reset();
+            });
+
+            document.getElementById('addUserForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const userData = {
+                    username: document.getElementById('newUsername').value,
+                    password: document.getElementById('newPassword').value,
+                    role: document.getElementById('newUserRole').value,
+                    name: document.getElementById('newUserName').value
+                };
+                
+                addUser(userData);
+                document.getElementById('addUserModal').classList.remove('active');
+                this.reset();
+            });
+
+            // Receipt modal
+            document.getElementById('printReceipt').addEventListener('click', function() {
+                window.print();
+            });
+
+            document.getElementById('closeReceipt').addEventListener('click', function() {
+                document.getElementById('receiptModal').classList.remove('active');
+            });
+
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                    }
+                });
+            });
+
+            // Initialize app
+            showLogin();
+        });
+    </script>
+</body>
+</html>
